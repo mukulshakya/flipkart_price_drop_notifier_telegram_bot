@@ -152,9 +152,9 @@ bot.action(/pricehistory_.*/, async (ctx) => {
     const subscription = await db.Subscription.findById(id);
     let caption = `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Url: *${subscription.url}\n\n*Price Histories: *\n\n`;
     subscription.priceHistories.forEach((item) => {
-      caption += `₹${item.price} @ ${new Date(
-        item.datetime
-      ).toLocaleString()}\n\n`;
+      caption += `₹${item.price} @ ${new Date(item.datetime).toLocaleString({
+        timezone: "Asia/Kolkata",
+      })}\n\n`;
     });
     await ctx.answerCbQuery();
     return await ctx.editMessageCaption(caption, {
