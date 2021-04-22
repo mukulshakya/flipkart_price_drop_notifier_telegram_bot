@@ -33,32 +33,28 @@ bot.command("list_alerts", async (ctx) => {
       username: ctx.message.chat.username,
     });
     for (const subscription of subscriptions) {
-      await ctx.telegram.sendPhoto(
-        ctx.message.chat.id,
-        "https://images-na.ssl-images-amazon.com/images/I/71wkpcIfqdL._SL1500_.jpg",
-        {
-          parse_mode: "Markdown",
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: "Delete Alert?",
-                  callback_data: "delete_alert_" + subscription._id,
-                  hide: false,
-                },
-              ],
-              [
-                {
-                  text: "View Price History?",
-                  callback_data: "pricehistory_" + subscription._id,
-                  hide: false,
-                },
-              ],
+      await ctx.telegram.sendPhoto(ctx.message.chat.id, subscription.imageUrl, {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "Delete Alert?",
+                callback_data: "delete_alert_" + subscription._id,
+                hide: false,
+              },
             ],
-          },
-          caption: `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Url: *${subscription.url}`,
-        }
-      );
+            [
+              {
+                text: "View Price History?",
+                callback_data: "pricehistory_" + subscription._id,
+                hide: false,
+              },
+            ],
+          ],
+        },
+        caption: `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Url: *${subscription.url}`,
+      });
     }
     return subscriptions.length
       ? null
