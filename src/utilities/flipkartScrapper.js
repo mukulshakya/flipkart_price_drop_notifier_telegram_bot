@@ -5,7 +5,7 @@ function findNestedObj(entireObj) {
   let finalObj = { title: null, pricing: null, imageUrl: null, webUrl: null };
   try {
     JSON.stringify(entireObj, (_, nestedValue) => {
-      for (const key of Object.keys(finalObj)) {
+      for (const key of ["pricing", "titleComponent", "imageUrl", "webUrl"]) {
         if (nestedValue && nestedValue[key]) {
           if (
             ["imageUrl", "webUrl"].includes(key) &&
