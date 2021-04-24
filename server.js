@@ -1,6 +1,8 @@
 const express = require("express");
+// const amazonScrapper = require("./amazonScrapper");
+const flipkartScrapper = require("./src/utilities/flipkartScrapper");
 const app = express();
-const flipkartScrapper = require("./flipkartScrapper");
+// const flipkartScrapper = require("./flipkartScrapper");
 app.use(express.json());
 
 app.post("/getData", async (req, res) => {

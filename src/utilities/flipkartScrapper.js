@@ -2,18 +2,20 @@ const cheerio = require("cheerio");
 const axios = require("axios");
 
 function findNestedObj(entireObj) {
-  let finalObj = { title: null, pricing: null, imageUrl: null };
+  let finalObj = { title: null, pricing: null, imageUrl: null, webUrl: null };
   try {
     JSON.stringify(entireObj, (_, nestedValue) => {
-      for (const key of ["pricing", "titleComponent", "imageUrl", "webUrl"]) {
+      for (const key of Object.keys(finalObj)) {
         if (nestedValue && nestedValue[key]) {
           if (
-            ["pricing", "imageUrl", "webUrl"].includes(key) &&
+            ["imageUrl", "webUrl"].includes(key) &&
             typeof nestedValue[key] === "string"
           )
             finalObj[key] = nestedValue[key];
           else if (key === "titleComponent")
             finalObj["title"] = nestedValue[key]["value"]["title"];
+          else if (key === "pricing" && nestedValue[key]["finalPrice"])
+            finalObj["pricing"] = nestedValue[key]["finalPrice"]["value"];
         }
       }
       return nestedValue;
