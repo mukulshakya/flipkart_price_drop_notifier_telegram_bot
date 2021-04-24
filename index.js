@@ -71,9 +71,12 @@ bot.command("list_alerts", async (ctx) => {
 // GLOBAL MESSAGE HANDLER
 bot.on("message", async (ctx) => {
   try {
-    const url = ctx.message.text;
-    if (!url.match(/^http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.{20,}/i))
-      return ctx.replyWithHTML(INVALID_LINK_MSG);
+    let url = ctx.message.text.match(
+      /http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.{20,}/i
+    );
+    if (!url) return ctx.replyWithHTML(INVALID_LINK_MSG);
+
+    url = url[0];
 
     const { message_id } = await ctx.reply("Please wait fetching details.");
 
