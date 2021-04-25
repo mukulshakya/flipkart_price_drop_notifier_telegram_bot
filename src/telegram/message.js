@@ -14,6 +14,8 @@ module.exports = (bot, db) => {
 
       url = url[0];
 
+      const { message_id } = await ctx.reply("Please wait fetching details.");
+
       const previousTrackingCount = await db.Subscription.find({
         username: ctx.message.chat.username,
         chatId: ctx.message.chat.id,
@@ -23,9 +25,13 @@ module.exports = (bot, db) => {
           `You can only have upto 5 trackings set up. Delete previous to add new.`
         );
 
-      const { message_id } = await ctx.reply("Please wait fetching details.");
-
-      const { title, pricing, imageUrl, webUrl } = await flipkartScrapper(url);
+      const {
+        title,
+        pricing,
+        imageUrl,
+        webUrl,
+        availability,
+      } = await flipkartScrapper(url);
       const imageUrlFixed = imageUrl
         .split("?")[0]
         .replace("{@width}", "200")
@@ -34,7 +40,7 @@ module.exports = (bot, db) => {
       await ctx.deleteMessage(message_id);
 
       await ctx.replyWithPhoto(imageUrlFixed, {
-        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Url: *${webUrl}`,
+        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}`,
         parse_mode: "Markdown",
       });
 
@@ -50,10 +56,12 @@ module.exports = (bot, db) => {
             price: pricing,
           });
         subscription.currentPrice = pricing;
+        subscription.availability = availability;
         await subscription.save();
       } else
         subscription = await db.Subscription.create({
           title,
+          availability,
           imageUrl: imageUrlFixed,
           url: webUrl,
           chatId: ctx.message.chat.id,

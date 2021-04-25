@@ -3,13 +3,19 @@ const flipkartScrapper = require("./flipkartScrapper");
 
 module.exports = (bot, db) => {
   cron.schedule("0 */1 * * *", async () => {
-    console.log("****STARTING HOURLY CRON****", new Date().toTimeString());
+    console.log(
+      "****STARTING HOURLY CRON****",
+      new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      "IST"
+    );
 
     try {
       const subscriptions = await db.Subscription.find();
       for (const subscription of subscriptions) {
-        const { pricing } = await flipkartScrapper(subscription.url);
-        if (String(pricing).match(/\d+/)) {
+        const { pricing, availability } = await flipkartScrapper(
+          subscription.url
+        );
+        if (String(pricing).match(/\d+/) && availability) {
           if (
             Number(pricing) < subscription.currentPrice &&
             subscription.currentPrice <= subscription.initialPrice
@@ -41,11 +47,11 @@ module.exports = (bot, db) => {
                     ],
                   ],
                 },
-                caption: `*Title: *${subscription.title}\n\n*Previous Price: *₹${subscription.currentPrice}\n\n*Current Price: *₹${pricing}\n\n*Url: *${subscription.url}`,
+                caption: `*Title: *${subscription.title}\n\n*Previous Price: *₹${subscription.currentPrice}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${subscription.url}`,
               }
             );
           }
-          
+
           if (subscription.currentPrice != pricing)
             subscription.priceHistories.push({
               datetime: new Date(),
@@ -53,6 +59,7 @@ module.exports = (bot, db) => {
             });
 
           subscription.currentPrice = pricing;
+          subscription.availability = availability;
           await subscription.save();
         }
       }
