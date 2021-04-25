@@ -1,8 +1,30 @@
+const jobQueue = require("../utilities/queue/jobQueue");
+
 module.exports = (bot, db) => {
   bot.action(/delete_alert_.*/, async (ctx) => {
     try {
       const id = ctx.callbackQuery.data.replace("delete_alert_", "");
-      await db.Subscription.findByIdAndDelete(id);
+      const subscription = await db.Subscription.findByIdAndDelete(id);
+      await jobQueue(bot, db);
+      // const job = await queue.getJob(subscription.jobId);
+      // if (job) {
+      // console.log({ job });
+      // queue
+      //   .getJobs()
+      //   .then((jobs) =>
+      //     console.log({ jobs: jobs.map((job) => job.data.title) })
+      //   );
+      // const removeRepeat = await queue.removeRepeatableByKey(job.id);
+      // console.log({ removeRepeat });
+      // const removed = await job.remove(job.id);
+      // console.log({ removed });
+      // queue.getJobs().then((jobs) => console.log({ jobs }));
+      // queue
+      //   .getJobs()
+      //   .then((jobs) =>
+      //     console.log({ jobs: jobs.map((job) => job.data.title) })
+      //   );
+      // }
       await ctx.deleteMessage(ctx.callbackQuery.message.message_id);
       await ctx.reply("Alert Deleted!");
       return await ctx.answerCbQuery();
