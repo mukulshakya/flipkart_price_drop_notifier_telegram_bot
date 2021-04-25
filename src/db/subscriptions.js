@@ -20,6 +20,7 @@ const SubscriptionSchema = new Schema(
     ],
     url: { type: String, required: true },
     imageUrl: { type: String, required: true },
+    availability: { type: String, default: "Available" },
   },
   { timestamps: true }
 );

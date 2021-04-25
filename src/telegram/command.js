@@ -49,7 +49,7 @@ module.exports = (bot, db) => {
                 ],
               ],
             },
-            caption: `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Url: *${subscription.url}`,
+            caption: `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}`,
           }
         );
       }

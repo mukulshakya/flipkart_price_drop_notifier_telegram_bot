@@ -16,7 +16,7 @@ module.exports = (bot, db) => {
     try {
       const id = ctx.callbackQuery.data.replace("pricehistory_", "");
       const subscription = await db.Subscription.findById(id);
-      let caption = `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Url: *${subscription.url}\n\n*Price Histories: *\n\n`;
+      let caption = `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}\n\n*Price Histories: *\n\n`;
       subscription.priceHistories.forEach((item) => {
         caption += `₹${item.price} @ ${new Date(
           item.datetime
