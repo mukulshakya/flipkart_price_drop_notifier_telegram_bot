@@ -14,6 +14,15 @@ module.exports = (bot, db) => {
 
       url = url[0];
 
+      const previousTrackingCount = await db.Subscription.find({
+        username: ctx.message.chat.username,
+        chatId: ctx.message.chat.id,
+      }).countDocuments();
+      if (previousTrackingCount >= 5)
+        return await ctx.reply(
+          `You can only have upto 5 trackings set up. Delete previous to add new.`
+        );
+
       const { message_id } = await ctx.reply("Please wait fetching details.");
 
       const { title, pricing, imageUrl, webUrl } = await flipkartScrapper(url);
