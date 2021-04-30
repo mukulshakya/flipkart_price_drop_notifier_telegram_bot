@@ -20,5 +20,8 @@
     "mongoose": "^5.12.4",
     "node-cron": "^3.0.0",
     "telegraf": "^4.3.0"
+  },
+  "devDependencies": {
+    "migrate-mongo": "^8.2.2"
   }
 }

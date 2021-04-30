@@ -10,6 +10,7 @@ mongoose
   .catch((e) => console.log("DB connection error:", e));
 
 module.exports = {
-  User: require("./users"),
+  // User: require("./users"),
   Subscription: require("./subscriptions"),
+  Product: require("./products"),
 };
