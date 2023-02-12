@@ -6,8 +6,6 @@ const {
 
 const SubscriptionSchema = new Schema(
   {
-    chatId: { type: Number, required: true },
-    username: { type: String, required: true, lowercase: true, trim: true },
     title: { type: String, required: true, trim: true },
     currentPrice: { type: Number, required: true },
     initialPrice: { type: Number, required: true },
@@ -21,7 +19,7 @@ const SubscriptionSchema = new Schema(
     url: { type: String, required: true },
     imageUrl: { type: String, required: true },
     availability: { type: String, default: "Available" },
-    jobId: { type: String, default: "" },
+    scheduled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

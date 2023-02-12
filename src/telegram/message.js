@@ -1,52 +1,43 @@
 const { Markup } = require("telegraf");
 const flipkartScrapper = require("../utilities/flipkartScrapper");
 
+const ALLOWED_LINKS = ["Flipkart"];
+const REQUIRED_KEYS = ["title", "pricing", "imageUrl", "webUrl", "availability"];
+
 module.exports = (bot, db) => {
   bot.on("message", async (ctx) => {
     try {
-      let url = ctx.message.text.match(
-        /http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.{20,}/i
-      );
+      let url = ctx.message.text.match(/http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.{20,}/i);
       if (!url)
         return ctx.replyWithHTML(
-          "Link does't seem to be a valid one!! Please try again."
+          `Link doesn't seem to be a valid one!! Please try again.\n\nWe only support links from ${ALLOWED_LINKS.join(
+            ", "
+          )}`
         );
 
-      url = url[0];
+      const { message_id } = await ctx.reply("Please wait! fetching details.");
 
-      const { message_id } = await ctx.reply("Please wait fetching details.");
+      const { username, id: chatId } = ctx.message.chat;
 
-      const previousTrackingCount = await db.Subscription.find({
-        username: ctx.message.chat.username,
-        chatId: ctx.message.chat.id,
-      }).countDocuments();
-      if (previousTrackingCount >= 5)
-        return await ctx.reply(
-          `You can only have upto 5 trackings set up. Delete previous to add new.`
-        );
+      let user = await db.User.findOne({ username, chatId });
+      if (user && user.subscriptions.length >= 5) {
+        return await ctx.reply(`You can only have upto 5 trackings set up. Delete previous to add new.`);
+      }
 
-      const {
-        title,
-        pricing,
-        imageUrl,
-        webUrl,
-        availability,
-      } = await flipkartScrapper(url);
-      const imageUrlFixed = imageUrl
-        .split("?")[0]
-        .replace("{@width}", "200")
-        .replace("{@height}", "200");
+      const resp = await flipkartScrapper(url[0]);
+      const someKeyMissing = REQUIRED_KEYS.some((key) => resp[key] === null);
+      if (someKeyMissing)
+        return ctx.reply("Link doesn't seem to be a valid one! Please provide the product page url only.");
+      const { title, pricing, imageUrl, webUrl, availability } = resp;
+      const imageUrlFixed = imageUrl.split("?")[0].replace("{@width}", "200").replace("{@height}", "200");
 
       await ctx.deleteMessage(message_id);
-
       await ctx.replyWithPhoto(imageUrlFixed, {
         caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}`,
         parse_mode: "Markdown",
       });
 
       let subscription = await db.Subscription.findOne({
-        username: ctx.message.chat.username,
-        chatId: ctx.message.chat.id,
         $or: [{ url: webUrl }, { title }, { imageUrl: imageUrlFixed }],
       });
       if (subscription) {
@@ -58,31 +49,36 @@ module.exports = (bot, db) => {
         subscription.currentPrice = pricing;
         subscription.availability = availability;
         await subscription.save();
-      } else
+      } else {
         subscription = await db.Subscription.create({
           title,
           availability,
           imageUrl: imageUrlFixed,
           url: webUrl,
-          chatId: ctx.message.chat.id,
-          username: ctx.message.chat.username,
           initialPrice: pricing,
           currentPrice: pricing,
           priceHistories: [{ datetime: new Date(), price: pricing }],
         });
+      }
 
-      return await ctx.reply(
-        `You will be notified when the price drops below <b>₹${pricing}</b>`,
-        {
-          parse_mode: "HTML",
-          ...Markup.inlineKeyboard([
-            Markup.button.callback(
-              "Delete Alert?",
-              "delete_alert_" + subscription._id
-            ),
-          ]),
-        }
+      const upsertedUser = await db.User.updateOne(
+        { username, chatId },
+        { $addToSet: { subscriptions: subscription._id } },
+        { upsert: true }
       );
+
+      const userId = user
+        ? user._id
+        : upsertedUser && Array.isArray(upsertedUser.upserted) && upsertedUser.upserted.length
+        ? upsertedUser.upserted[0]._id
+        : "";
+
+      return await ctx.reply(`You will be notified when the price drops below <b>₹${pricing}</b>`, {
+        parse_mode: "HTML",
+        ...Markup.inlineKeyboard([
+          Markup.button.callback("Delete Alert?", `delete_alert_${subscription._id}:${userId}`),
+        ]),
+      });
     } catch (e) {
       console.log(e);
       return ctx.reply("Some unexpected error occurred! Please try again.");

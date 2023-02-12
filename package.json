@@ -5,20 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "DEBUG=\"agenda:*\" node ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "agenda": "^5.0.0",
     "axios": "^0.21.1",
-    "bull": "^3.22.3",
     "cheerio": "^1.0.0-rc.6",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "ioredis": "^4.27.1",
     "mongoose": "^5.12.4",
-    "node-cron": "^3.0.0",
     "telegraf": "^4.3.0"
   },
   "devDependencies": {

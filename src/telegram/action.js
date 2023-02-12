@@ -3,28 +3,16 @@ const jobQueue = require("../utilities/queue/jobQueue");
 module.exports = (bot, db) => {
   bot.action(/delete_alert_.*/, async (ctx) => {
     try {
-      const id = ctx.callbackQuery.data.replace("delete_alert_", "");
-      const subscription = await db.Subscription.findByIdAndDelete(id);
-      await jobQueue(bot, db);
-      // const job = await queue.getJob(subscription.jobId);
-      // if (job) {
-      // console.log({ job });
-      // queue
-      //   .getJobs()
-      //   .then((jobs) =>
-      //     console.log({ jobs: jobs.map((job) => job.data.title) })
-      //   );
-      // const removeRepeat = await queue.removeRepeatableByKey(job.id);
-      // console.log({ removeRepeat });
-      // const removed = await job.remove(job.id);
-      // console.log({ removed });
-      // queue.getJobs().then((jobs) => console.log({ jobs }));
-      // queue
-      //   .getJobs()
-      //   .then((jobs) =>
-      //     console.log({ jobs: jobs.map((job) => job.data.title) })
-      //   );
-      // }
+      console.log(ctx.callbackQuery.data);
+      const [subId, userId] = ctx.callbackQuery.data.replace("delete_alert_", "").split(":");
+      console.log({ subId, userId });
+      if (!subId || !userId) throw new Error();
+      // Delete subscription if only one user have it.
+      const userCount = await db.User.find({ subscriptions: subId }).countDocuments();
+      let subscription;
+      if (userCount === 1) subscription = await db.Subscription.findByIdAndDelete(subId);
+      // Remove subscription from the user
+      await db.User.findByIdAndUpdate(userId, { $pull: { subscriptions: subId } });
       await ctx.deleteMessage(ctx.callbackQuery.message.message_id);
       await ctx.reply("Alert Deleted!");
       return await ctx.answerCbQuery();
@@ -36,13 +24,13 @@ module.exports = (bot, db) => {
 
   bot.action(/pricehistory_.*/, async (ctx) => {
     try {
-      const id = ctx.callbackQuery.data.replace("pricehistory_", "");
-      const subscription = await db.Subscription.findById(id);
+      const [subId, userId] = ctx.callbackQuery.data.replace("pricehistory_", "").split(":");
+      const subscription = await db.Subscription.findById(subId);
       let caption = `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}\n\n*Price Histories: *\n\n`;
       subscription.priceHistories.forEach((item) => {
-        caption += `₹${item.price} @ ${new Date(
-          item.datetime
-        ).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}\n\n`;
+        caption += `₹${item.price} @ ${new Date(item.datetime).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        })}\n\n`;
       });
       await ctx.answerCbQuery();
       return await ctx.editMessageCaption(caption, {
@@ -52,7 +40,7 @@ module.exports = (bot, db) => {
             [
               {
                 text: "Delete Alert?",
-                callback_data: "delete_alert_" + subscription._id,
+                callback_data: `delete_alert_${subscription._id}:${userId}`,
                 hide: false,
               },
             ],

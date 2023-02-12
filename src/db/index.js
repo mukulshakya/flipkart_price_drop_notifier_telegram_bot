@@ -6,11 +6,10 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .then(() => console.log("DB connected"))
+  .then(() => console.log("mongo connected"))
   .catch((e) => console.log("DB connection error:", e));
 
 module.exports = {
-  // User: require("./users"),
+  User: require("./users"),
   Subscription: require("./subscriptions"),
-  Product: require("./products"),
 };
