@@ -80,12 +80,9 @@ module.exports = (bot, db) => {
       console.log(10);
 
       await ctx.deleteMessage(message_id);
-      await ctx.replyWithPhoto(imageUrlFixed, {
-        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}`,
+      return ctx.replyWithPhoto(imageUrlFixed, {
+        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}\n\n\nYou will be notified when the price drops below *₹${pricing}*`,
         parse_mode: "Markdown",
-      });
-      return await ctx.reply(`You will be notified when the price drops below <b>₹${pricing}</b>`, {
-        parse_mode: "HTML",
         ...Markup.inlineKeyboard([
           Markup.button.callback("Delete Alert?", `delete_alert_${subscription._id}:${userId}`),
         ]),
