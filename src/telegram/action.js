@@ -24,7 +24,7 @@ module.exports = (bot, db) => {
       const [subId, userId] = ctx.callbackQuery.data.replace("pricehistory_", "").split(":");
       const subscription = await db.Subscription.findById(subId);
       let caption = `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}\n\n*Price Histories: *\n\n`;
-      subscription.priceHistories.forEach((item) => {
+      subscription.priceHistories.reverse().forEach((item) => {
         caption += `₹${item.price} @ ${new Date(item.datetime).toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
         })}\n\n`;
