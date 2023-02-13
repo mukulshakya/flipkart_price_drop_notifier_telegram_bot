@@ -5,11 +5,12 @@ const ALLOWED_LINKS = ["Flipkart"];
 const REQUIRED_KEYS = ["title", "pricing", "imageUrl", "webUrl", "availability"];
 const MAX_TRACKINGS = 10;
 const SKIP_MAX_TRACKING_USERS = ["mukulshakya"];
+const FK_URL_REGEX = /http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/[^\s]+/i;
 
 module.exports = (bot, db) => {
   bot.on("message", async (ctx) => {
     try {
-      let url = ctx.message.text.match(/http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.+/i);
+      let url = ctx.message.text.match(FK_URL_REGEX);
       if (!url)
         return ctx.replyWithHTML(
           `Link doesn't seem to be a valid one!! Please try again.\n\nWe only support links from ${ALLOWED_LINKS.join(
