@@ -31,26 +31,19 @@ module.exports = (bot, db) => {
       const { title, pricing, imageUrl, webUrl, availability } = resp;
       const imageUrlFixed = imageUrl.split("?")[0].replace("{@width}", "200").replace("{@height}", "200");
 
-      console.log(1);
-
       let subscription = await db.Subscription.findOne({
         $or: [{ url: webUrl }, { title }, { imageUrl: imageUrlFixed }],
       });
-      console.log(2);
       if (subscription) {
-        console.log(3);
         if (subscription.currentPrice != pricing)
           subscription.priceHistories.push({
             datetime: new Date(),
             price: pricing,
           });
-        console.log(4);
         subscription.currentPrice = pricing;
         subscription.availability = availability;
         await subscription.save();
-        console.log(5);
       } else {
-        console.log(6);
         subscription = await db.Subscription.create({
           title,
           availability,
@@ -60,24 +53,19 @@ module.exports = (bot, db) => {
           currentPrice: pricing,
           priceHistories: [{ datetime: new Date(), price: pricing }],
         });
-        console.log(7);
       }
 
-      console.log(8);
       const upsertedUser = await db.User.updateOne(
         { username, chatId },
         { $addToSet: { subscriptions: subscription._id } },
         { upsert: true }
       );
-      console.log(9);
 
       const userId = user
         ? user._id
         : upsertedUser && Array.isArray(upsertedUser.upserted) && upsertedUser.upserted.length
         ? upsertedUser.upserted[0]._id
         : "";
-
-      console.log(10);
 
       await ctx.deleteMessage(message_id);
       return ctx.replyWithPhoto(imageUrlFixed, {
