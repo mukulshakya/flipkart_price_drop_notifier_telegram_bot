@@ -61,6 +61,8 @@ module.exports = (bot, db) => {
             datetime: new Date(),
             price: pricing,
           });
+        if (pricing < subscription.lowestPrice) subscription.lowestPrice = pricing;
+        if (pricing > subscription.highestPrice) subscription.highestPrice = pricing;
         subscription.currentPrice = pricing;
         subscription.availability = availability;
         await subscription.save();
@@ -73,6 +75,8 @@ module.exports = (bot, db) => {
           url: webUrl,
           initialPrice: pricing,
           currentPrice: pricing,
+          lowestPrice: pricing,
+          highestPrice: pricing,
           priceHistories: [{ datetime: new Date(), price: pricing }],
         });
       }
@@ -91,7 +95,7 @@ module.exports = (bot, db) => {
 
       await ctx.deleteMessage(message_id);
       return ctx.replyWithPhoto(imageUrlFixed, {
-        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}\n\n\nYou will be notified when the price drops below *₹${pricing}*`,
+        caption: `*Title: *${title}\n\n*Lowest Price: *₹${subscription.lowestPrice}\n\n*Highest Price: *₹${subscription.highestPrice}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}\n\nYou will be notified when the price drops below *₹${pricing}*`,
         parse_mode: "Markdown",
         ...Markup.inlineKeyboard([
           Markup.button.callback("Delete Alert?", `delete_alert_${subscription._id}:${userId}`),

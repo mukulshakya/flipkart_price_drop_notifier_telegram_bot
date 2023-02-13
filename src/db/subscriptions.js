@@ -4,6 +4,8 @@ const SubscriptionSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
     portal: { type: String, required: true },
+    lowestPrice: Number,
+    highestPrice: Number,
     currentPrice: { type: Number, required: true },
     initialPrice: { type: Number, required: true },
     priceHistories: [

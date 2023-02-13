@@ -2,7 +2,7 @@ module.exports = (bot, db) => {
   //  /start
   bot.start((ctx) =>
     ctx.replyWithHTML(
-      `<b>Hi! Welcome to Flipkart Price Tracker</b>
+      `<b>Hi! Welcome to Online Price Tracker</b>
 
      Send Link to Start Tracking
     `
@@ -11,7 +11,7 @@ module.exports = (bot, db) => {
   //  /help
   bot.help((ctx) =>
     ctx.replyWithHTML(
-      `<b>Hi! Welcome to Flipkart Price Tracker</b>
+      `<b>Hi! Welcome to Online Price Tracker</b>
 
      Send Link to Start Tracking
     `
@@ -49,7 +49,7 @@ module.exports = (bot, db) => {
               ],
             ],
           },
-          caption: `*Title: *${subscription.title}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}`,
+          caption: `*Title: *${subscription.title}\n\n*Lowest Price: *₹${subscription.lowestPrice}\n\n*Highest Price: *₹${subscription.highestPrice}\n\n*Current Price: *₹${subscription.currentPrice}\n\n*Availability: *${subscription.availability}\n\n*Url: *${subscription.url}`,
         });
       }
       return subscriptions.length

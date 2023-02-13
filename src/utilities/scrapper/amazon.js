@@ -23,6 +23,8 @@ module.exports = (url) =>
         finalObj.availability = $("div#availability").first().text().trim() ? "Available" : "Unavailable";
         // console.log({ title, price, image, url, availability });
 
+        if (finalObj.pricing) finalObj.pricing = parseInt(finalObj.pricing);
+
         require("fs").writeFileSync(
           `/Users/mukulshakya/extra/flipkart_price_drop_notifier_telegram_bot/playground/html/${
             url.split("/")[3]

@@ -59,7 +59,7 @@ async function processSubscription(agenda, jobName, subscription, bot, db) {
             ],
           ],
         },
-        caption: `*Title: *${subscription.title}\n\n*Previous Price: *₹${subscription.currentPrice}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${subscription.url}`,
+        caption: `*Title: *${subscription.title}\n\n*Lowest Price: *₹${subscription.lowestPrice}\n\n*Highest Price: *₹${subscription.highestPrice}\n\n*Previous Price: *₹${subscription.currentPrice}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${subscription.url}`,
       });
     }
   }
@@ -69,7 +69,8 @@ async function processSubscription(agenda, jobName, subscription, bot, db) {
       datetime: new Date(),
       price: pricing,
     });
-
+  if (pricing < subscription.lowestPrice) subscription.lowestPrice = pricing;
+  if (pricing > subscription.highestPrice) subscription.highestPrice = pricing;
   subscription.currentPrice = pricing;
   subscription.availability = availability;
   subscription.scheduled = true;

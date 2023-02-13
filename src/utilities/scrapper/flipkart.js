@@ -11,31 +11,15 @@ function findNestedObj(entireObj) {
   };
   try {
     JSON.stringify(entireObj, (_, nestedValue) => {
-      for (const key of [
-        "pricing",
-        "titleComponent",
-        "imageUrl",
-        "webUrl",
-        "widget",
-      ]) {
+      for (const key of ["pricing", "titleComponent", "imageUrl", "webUrl", "widget"]) {
         if (nestedValue && nestedValue[key]) {
-          if (
-            ["imageUrl", "webUrl"].includes(key) &&
-            typeof nestedValue[key] === "string"
-          )
+          if (["imageUrl", "webUrl"].includes(key) && typeof nestedValue[key] === "string")
             finalObj[key] = nestedValue[key];
-          else if (key === "titleComponent")
-            finalObj["title"] = nestedValue[key]["value"]["title"];
+          else if (key === "titleComponent") finalObj["title"] = nestedValue[key]["value"]["title"];
           else if (key === "pricing" && nestedValue[key]["finalPrice"])
             finalObj["pricing"] = nestedValue[key]["finalPrice"]["value"];
-          else if (
-            key === "widget" &&
-            nestedValue[key]["type"] === "AVAILABILITY"
-          )
-            finalObj["availability"] =
-              nestedValue[key]["data"]["announcementComponent"]["value"][
-                "title"
-              ];
+          else if (key === "widget" && nestedValue[key]["type"] === "AVAILABILITY")
+            finalObj["availability"] = nestedValue[key]["data"]["announcementComponent"]["value"]["title"];
         }
       }
       return nestedValue;
@@ -43,6 +27,7 @@ function findNestedObj(entireObj) {
   } catch (e) {
     // console.log(e);
   } finally {
+    if (finalObj.pricing) finalObj.pricing = parseInt(finalObj.pricing);
     return finalObj;
   }
 }
