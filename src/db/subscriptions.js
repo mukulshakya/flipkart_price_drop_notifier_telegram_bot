@@ -1,12 +1,9 @@
-const {
-  Schema,
-  model,
-  SchemaTypes: { ObjectId },
-} = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const SubscriptionSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
+    portal: { type: String, required: true },
     currentPrice: { type: Number, required: true },
     initialPrice: { type: Number, required: true },
     priceHistories: [

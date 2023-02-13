@@ -1,4 +1,4 @@
-const flipkartScrapper = require("../utilities/flipkartScrapper");
+const scrapper = require("../utilities/scrapper");
 
 const DOC_BATCH_SIZE = 50;
 
@@ -31,7 +31,7 @@ async function processSubscription(agenda, jobName, subscription, bot, db) {
     throw new Error("Subscription got deleted");
   }
 
-  const { pricing, availability } = await flipkartScrapper(subscription.url);
+  const { pricing, availability } = await scrapper[subscription.portal](subscription.url);
   if (!String(pricing).match(/\d+/) || !availability)
     throw new Error("Pricing and availability can't be found.");
 

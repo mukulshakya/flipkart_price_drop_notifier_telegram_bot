@@ -1,17 +1,32 @@
 const { Markup } = require("telegraf");
-const flipkartScrapper = require("../utilities/flipkartScrapper");
+const scrapper = require("../utilities/scrapper");
+const {
+  ALLOWED_LINKS,
+  REQUIRED_KEYS,
+  MAX_TRACKINGS,
+  SKIP_MAX_TRACKING_USERS,
+  URL_REGEX,
+} = require("../utilities/contants");
 
-const ALLOWED_LINKS = ["Flipkart"];
-const REQUIRED_KEYS = ["title", "pricing", "imageUrl", "webUrl", "availability"];
-const MAX_TRACKINGS = 10;
-const SKIP_MAX_TRACKING_USERS = ["mukulshakya"];
-const FK_URL_REGEX = /http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/[^\s]+/i;
+const getUrlWithPortal = (text) => {
+  let url, portal;
+  for (const [key, re] of Object.entries(URL_REGEX)) {
+    const match = text.match(re);
+    if (match) {
+      url = match[0];
+      portal = key;
+      break;
+    }
+  }
+
+  return { url, portal };
+};
 
 module.exports = (bot, db) => {
   bot.on("message", async (ctx) => {
     try {
-      let url = ctx.message.text.match(FK_URL_REGEX);
-      if (!url)
+      let { url, portal } = getUrlWithPortal(ctx.message.text);
+      if (!url || !portal)
         return ctx.replyWithHTML(
           `Link doesn't seem to be a valid one!! Please try again.\n\nWe only support links from ${ALLOWED_LINKS.join(
             ", "
@@ -29,11 +44,12 @@ module.exports = (bot, db) => {
         );
       }
 
-      const resp = await flipkartScrapper(url[0]);
-      const someKeyMissing = REQUIRED_KEYS.some((key) => resp[key] === null);
+      const resp = await scrapper[portal](url);
+      const someKeyMissing = REQUIRED_KEYS.some((key) => !resp[key]);
       if (someKeyMissing)
         return ctx.reply("Link doesn't seem to be a valid one! Please provide the product page url only.");
       const { title, pricing, imageUrl, webUrl, availability } = resp;
+      console.log({ title, pricing, imageUrl, webUrl, availability });
       const imageUrlFixed = imageUrl.split("?")[0].replace("{@width}", "200").replace("{@height}", "200");
 
       let subscription = await db.Subscription.findOne({
@@ -50,6 +66,7 @@ module.exports = (bot, db) => {
         await subscription.save();
       } else {
         subscription = await db.Subscription.create({
+          portal,
           title,
           availability,
           imageUrl: imageUrlFixed,
