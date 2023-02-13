@@ -36,6 +36,7 @@ mongoose.connection.on("connected", async () => {
       db: { address: process.env.MONGODB_URI, options: { useNewUrlParser: true } },
     });
     agenda.on("ready", () => {
+      console.log("Agenda ready");
       require("./src/agenda")(agenda, bot, db);
     });
   } catch (e) {

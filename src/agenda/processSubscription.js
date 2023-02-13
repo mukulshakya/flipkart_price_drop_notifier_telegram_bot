@@ -20,7 +20,7 @@ module.exports = async (agenda, bot, db) => {
     //   console.log(`Job ${jobName} failed`);
     // });
     // Start running
-    await agenda.every("30 seconds", jobName);
+    await agenda.every("5 minutes", jobName);
   }
 };
 

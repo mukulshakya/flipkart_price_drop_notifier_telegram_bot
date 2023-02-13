@@ -10,5 +10,5 @@ module.exports = async (agenda, bot, db) => {
   // });
   // Start running
   await agenda.start();
-  await agenda.every("1 minute", "process subscriptions");
+  await agenda.every("10 minutes", "process subscriptions");
 };
