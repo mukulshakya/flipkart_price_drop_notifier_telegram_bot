@@ -31,12 +31,6 @@ module.exports = (bot, db) => {
       const { title, pricing, imageUrl, webUrl, availability } = resp;
       const imageUrlFixed = imageUrl.split("?")[0].replace("{@width}", "200").replace("{@height}", "200");
 
-      await ctx.deleteMessage(message_id);
-      await ctx.replyWithPhoto(imageUrlFixed, {
-        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}`,
-        parse_mode: "Markdown",
-      });
-
       console.log(1);
 
       let subscription = await db.Subscription.findOne({
@@ -85,6 +79,11 @@ module.exports = (bot, db) => {
 
       console.log(10);
 
+      await ctx.deleteMessage(message_id);
+      await ctx.replyWithPhoto(imageUrlFixed, {
+        caption: `*Title: *${title}\n\n*Current Price: *₹${pricing}\n\n*Availability: *${availability}\n\n*Url: *${webUrl}`,
+        parse_mode: "Markdown",
+      });
       return await ctx.reply(`You will be notified when the price drops below <b>₹${pricing}</b>`, {
         parse_mode: "HTML",
         ...Markup.inlineKeyboard([
