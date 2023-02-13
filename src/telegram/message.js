@@ -40,7 +40,7 @@ module.exports = (bot, db) => {
         $or: [{ url: webUrl }, { title }, { imageUrl: imageUrlFixed }],
       });
       if (subscription) {
-        if (subscription.currentPrice != pricing)
+        if (subscription.currentPrice != pricing && subscription.priceHistories.length < 20)
           subscription.priceHistories.push({
             datetime: new Date(),
             price: pricing,

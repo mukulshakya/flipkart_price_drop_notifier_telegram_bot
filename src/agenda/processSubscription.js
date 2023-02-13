@@ -64,7 +64,7 @@ async function processSubscription(agenda, jobName, subscription, bot, db) {
     }
   }
 
-  if (subscription.currentPrice != pricing)
+  if (subscription.currentPrice != pricing && subscription.priceHistories.length < 20)
     subscription.priceHistories.push({
       datetime: new Date(),
       price: pricing,
