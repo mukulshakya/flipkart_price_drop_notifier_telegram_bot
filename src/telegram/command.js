@@ -62,4 +62,29 @@ module.exports = (bot, db) => {
       return ctx.reply("Some unexpected error occurred! Please try again.");
     }
   });
+  //  /delete_all_alerts
+  bot.command("delete_all_alerts", async (ctx) => {
+    try {
+      ctx.reply("Deleting All Your Set Alerts.");
+
+      const user = await db.User.findOne({
+        chatId: ctx.message.chat.id,
+        username: ctx.message.chat.username,
+      });
+      const subscriptionsCount = user && Array.isArray(user.subscriptions) ? user.subscriptions.length : 0;
+
+      user.subscriptions = [];
+      await user.save();
+
+      return ctx.reply(
+        subscriptionsCount
+          ? `${subscriptionsCount} tracking(s) successfully removed.`
+          : "You don't have any alert set, Paste link to start tracking.",
+        { parse_mode: "Markdown" }
+      );
+    } catch (e) {
+      // console.log(e);
+      return ctx.reply("Some unexpected error occurred! Please try again.");
+    }
+  });
 };
