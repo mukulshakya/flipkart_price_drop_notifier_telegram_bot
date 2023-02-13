@@ -71,14 +71,19 @@ module.exports = (bot, db) => {
         chatId: ctx.message.chat.id,
         username: ctx.message.chat.username,
       });
-      const subscriptionsCount = user && Array.isArray(user.subscriptions) ? user.subscriptions.length : 0;
-
+      const subscriptions = user && Array.isArray(user.subscriptions) ? [...user.subscriptions] : [];
       user.subscriptions = [];
       await user.save();
 
+      // Delete subscription if only one user have it.
+      // for (const subId of subscriptions) {
+      //   const otherUserCount = await db.User.find({ subscriptions: subId }).countDocuments();
+      //   if (otherUserCount === 0) await db.Subscription.findByIdAndDelete(subId);
+      // }
+
       return ctx.reply(
-        subscriptionsCount
-          ? `${subscriptionsCount} tracking(s) successfully removed.`
+        subscriptions.length
+          ? `${subscriptions.length} tracking(s) successfully removed.`
           : "You don't have any alert set, Paste link to start tracking.",
         { parse_mode: "Markdown" }
       );

@@ -4,10 +4,12 @@ module.exports = (bot, db) => {
       const [subId, userId] = ctx.callbackQuery.data.replace("delete_alert_", "").split(":");
 
       if (!subId || !userId) throw new Error();
+
       // Delete subscription if only one user have it.
-      const userCount = await db.User.find({ subscriptions: subId }).countDocuments();
-      let subscription;
-      if (userCount === 1) subscription = await db.Subscription.findByIdAndDelete(subId);
+      // const userCount = await db.User.find({ subscriptions: subId }).countDocuments();
+      // let subscription;
+      // if (userCount === 1) subscription = await db.Subscription.findByIdAndDelete(subId);
+
       // Remove subscription from the user
       await db.User.findByIdAndUpdate(userId, { $pull: { subscriptions: subId } });
       await ctx.deleteMessage(ctx.callbackQuery.message.message_id);
