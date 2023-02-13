@@ -3,6 +3,8 @@ const flipkartScrapper = require("../utilities/flipkartScrapper");
 
 const ALLOWED_LINKS = ["Flipkart"];
 const REQUIRED_KEYS = ["title", "pricing", "imageUrl", "webUrl", "availability"];
+const MAX_TRACKINGS = 10;
+const SKIP_MAX_TRACKING_USERS = ["mukulshakya"];
 
 module.exports = (bot, db) => {
   bot.on("message", async (ctx) => {
@@ -20,8 +22,10 @@ module.exports = (bot, db) => {
       const { username, id: chatId } = ctx.message.chat;
 
       let user = await db.User.findOne({ username, chatId });
-      if (user && user.subscriptions.length >= 5) {
-        return await ctx.reply(`You can only have upto 5 trackings set up. Delete previous to add new.`);
+      if (!SKIP_MAX_TRACKING_USERS.includes(username) && user && user.subscriptions.length >= MAX_TRACKINGS) {
+        return await ctx.reply(
+          `You can only have upto ${MAX_TRACKINGS} trackings set up. Delete previous to add new.`
+        );
       }
 
       const resp = await flipkartScrapper(url[0]);
