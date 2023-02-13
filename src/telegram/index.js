@@ -1,8 +1,5 @@
-module.exports = (bot, db, queue) => {
+module.exports = (bot, db) => {
   require("fs")
     .readdirSync(__dirname)
-    .forEach(
-      (fileName) =>
-        fileName !== "index.js" && require(`./${fileName}`)(bot, db, queue)
-    );
+    .forEach((fileName) => fileName !== "index.js" && require(`./${fileName}`)(bot, db));
 };

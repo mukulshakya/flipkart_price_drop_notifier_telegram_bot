@@ -41,7 +41,7 @@ function findNestedObj(entireObj) {
       return nestedValue;
     });
   } catch (e) {
-    console.log(e);
+    // console.log(e);
   } finally {
     return finalObj;
   }
@@ -63,7 +63,7 @@ module.exports = (url) =>
         resolve(found);
       })
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
         reject();
       });
   });

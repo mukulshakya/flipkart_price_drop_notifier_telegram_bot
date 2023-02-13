@@ -80,7 +80,7 @@ module.exports = (bot, db) => {
         ]),
       });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return ctx.reply("Some unexpected error occurred! Please try again.");
     }
   });

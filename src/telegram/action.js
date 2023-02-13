@@ -1,11 +1,8 @@
-const jobQueue = require("../utilities/queue/jobQueue");
-
 module.exports = (bot, db) => {
   bot.action(/delete_alert_.*/, async (ctx) => {
     try {
-      console.log(ctx.callbackQuery.data);
       const [subId, userId] = ctx.callbackQuery.data.replace("delete_alert_", "").split(":");
-      console.log({ subId, userId });
+
       if (!subId || !userId) throw new Error();
       // Delete subscription if only one user have it.
       const userCount = await db.User.find({ subscriptions: subId }).countDocuments();
@@ -17,7 +14,7 @@ module.exports = (bot, db) => {
       await ctx.reply("Alert Deleted!");
       return await ctx.answerCbQuery();
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return ctx.reply("Some unexpected error occurred! Please try again.");
     }
   });
@@ -48,7 +45,7 @@ module.exports = (bot, db) => {
         },
       });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return ctx.reply("Some unexpected error occurred! Please try again.");
     }
   });

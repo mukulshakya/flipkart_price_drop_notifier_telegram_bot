@@ -13,7 +13,7 @@ module.exports = (url) =>
         resolve({});
       })
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
         reject();
       });
   });
