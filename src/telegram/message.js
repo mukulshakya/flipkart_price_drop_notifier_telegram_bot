@@ -9,7 +9,7 @@ const SKIP_MAX_TRACKING_USERS = ["mukulshakya"];
 module.exports = (bot, db) => {
   bot.on("message", async (ctx) => {
     try {
-      let url = ctx.message.text.match(/http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.{20,}/i);
+      let url = ctx.message.text.match(/http(s)?:\/\/((w){3}|(dl))?[.]?flipkart.com\/.+/i);
       if (!url)
         return ctx.replyWithHTML(
           `Link doesn't seem to be a valid one!! Please try again.\n\nWe only support links from ${ALLOWED_LINKS.join(
