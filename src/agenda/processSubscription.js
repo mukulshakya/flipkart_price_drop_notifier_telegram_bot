@@ -10,15 +10,15 @@ module.exports = async (agenda, bot, db) => {
       await processSubscription(agenda, jobName, doc, bot, db);
     });
     // job events
-    // agenda.on(`start:${jobName}`, () => {
-    //   console.log(`Job ${jobName} started`);
-    // });
-    // agenda.on(`success:${jobName}`, () => {
-    //   console.log(`Job ${jobName} succeeded`);
-    // });
-    // agenda.on(`fail:${jobName}`, () => {
-    //   console.log(`Job ${jobName} failed`);
-    // });
+    agenda.on(`start:${jobName}`, () => {
+      console.log(`Job ${jobName} started`);
+    });
+    agenda.on(`success:${jobName}`, () => {
+      console.log(`Job ${jobName} succeeded`);
+    });
+    agenda.on(`fail:${jobName}`, () => {
+      console.log(`Job ${jobName} failed`);
+    });
     // Start running
     await agenda.every("5 minutes", jobName);
   }

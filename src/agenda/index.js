@@ -5,9 +5,9 @@ module.exports = async (agenda, bot, db) => {
     await processSubscriptions(agenda, bot, db);
   });
 
-  // agenda.on(`start:process subscriptions`, (job) => {
-  //   console.log(`Job ${job.attrs.name} started`);
-  // });
+  agenda.on(`start:process subscriptions`, (job) => {
+    console.log(`Job ${job.attrs.name} started`);
+  });
   // Start running
   await agenda.start();
   await agenda.every("10 minutes", "process subscriptions");
